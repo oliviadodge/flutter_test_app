@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,6 +27,7 @@ class _RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _saved = <WordPair>{};
   final _biggerFont = TextStyle(fontSize: 18.0);
+  final map = GoogleFonts.asMap();
 
   @override
   Widget build(BuildContext context) {
@@ -81,16 +83,19 @@ class _RandomWordsState extends State<RandomWords> {
           if (index >= _suggestions.length) {
             _suggestions.addAll(generateWordPairs().take(10)); /*4*/
           }
-          return _buildRow(_suggestions[index]);
+          return _buildRow(_suggestions[index], index);
         });
   }
 
-  Widget _buildRow(WordPair pair) {
+  Widget _buildRow(WordPair pair, int index) {
     final alreadySaved = _saved.contains(pair);
+    final entries = map.entries;
+    final font = entries.elementAt(index);
+
     return ListTile(
       title: Text(
         pair.asPascalCase,
-        style: _biggerFont,
+        style: font.value.call(),
       ),
       trailing: Icon(
         // NEW from here...
