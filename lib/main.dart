@@ -92,25 +92,26 @@ class _RandomWordsState extends State<RandomWords> {
     final entries = map.entries;
     final font = entries.elementAt(index);
 
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: font.value.call(),
-      ),
-      trailing: Icon(
-        // NEW from here...
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-      ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
-    );
+    return Image.network('https://picsum.photos/250?image=9');
+    //   ListTile(
+    //   title: Text(
+    //     pair.asPascalCase,
+    //     style: font.value.call(),
+    //   ),
+    //   trailing: Icon(
+    //     // NEW from here...
+    //     alreadySaved ? Icons.favorite : Icons.favorite_border,
+    //     color: alreadySaved ? Colors.red : null,
+    //   ),
+    //   onTap: () {
+    //     setState(() {
+    //       if (alreadySaved) {
+    //         _saved.remove(pair);
+    //       } else {
+    //         _saved.add(pair);
+    //       }
+    //     });
+    //   },
+    // );
   }
 }
