@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
+import 'package:imgur/imgur.dart' as imgur;
 
 void main() => runApp(MyApp());
 
@@ -29,6 +29,12 @@ class _RandomWordsState extends State<RandomWords> {
   final _saved = <WordPair>{};
   final _biggerFont = TextStyle(fontSize: 18.0);
   final map = GoogleFonts.asMap();
+
+  @override
+  void initState() {
+    super.initState();
+    printGalleryResponse();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,4 +121,13 @@ class _RandomWordsState extends State<RandomWords> {
     //   },
     // );
   }
+}
+
+printGalleryResponse() async {
+  final client = imgur.Imgur(imgur.Authentication.fromToken('36e28719516adc1fc39664c3509699150fc2be82'));
+
+  /// Get your uploaded images
+  final resp = await client.gallery.list(page: 3);
+
+  print(resp);
 }
