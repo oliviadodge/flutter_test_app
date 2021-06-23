@@ -29,6 +29,7 @@ class _RandomWordsState extends State<RandomWords> {
   final _saved = <WordPair>{};
   final _biggerFont = TextStyle(fontSize: 18.0);
   final map = GoogleFonts.asMap();
+  final images = <imgur.Image>[];
 
   @override
   void initState() {
@@ -124,10 +125,10 @@ class _RandomWordsState extends State<RandomWords> {
 }
 
 printGalleryResponse() async {
-  final client = imgur.Imgur(imgur.Authentication.fromToken('36e28719516adc1fc39664c3509699150fc2be82'));
+  final client = imgur.Imgur(imgur.Authentication.fromClientId('21b7bbcaa973981'));
 
   /// Get your uploaded images
-  final resp = await client.gallery.list(page: 3);
+  final resp = await client.gallery.list();
 
   print(resp);
 }
