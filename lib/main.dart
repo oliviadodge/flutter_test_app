@@ -14,22 +14,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Startup Name Generator',
-      home: RandomWords(),
+      home: Gallery(),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class Gallery extends StatefulWidget {
   @override
-  _RandomWordsState createState() => _RandomWordsState();
+  _GalleryState createState() => _GalleryState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
+class _GalleryState extends State<Gallery> {
   final _suggestions = <WordPair>[];
   final _saved = <WordPair>{};
   final _biggerFont = TextStyle(fontSize: 18.0);
   final map = GoogleFonts.asMap();
-  final images = <imgur.Image>[];
+  var gallery = <imgur.GalleryAlbumImage>[];
 
   @override
   void initState() {
@@ -100,7 +100,8 @@ class _RandomWordsState extends State<RandomWords> {
     final entries = map.entries;
     final font = entries.elementAt(index);
 
-    return Image.network('https://picsum.photos/250?image=9');
+    final album = gallery[index];
+    return Image.network(album.images[0].link);
     //   ListTile(
     //   title: Text(
     //     pair.asPascalCase,
@@ -122,13 +123,15 @@ class _RandomWordsState extends State<RandomWords> {
     //   },
     // );
   }
+
+  printGalleryResponse() async {
+    final client = imgur.Imgur(imgur.Authentication.fromClientId('21b7bbcaa973981'));
+
+    /// Get your uploaded images
+    gallery = await client.gallery.list();
+
+    print(gallery);
+  }
 }
 
-printGalleryResponse() async {
-  final client = imgur.Imgur(imgur.Authentication.fromClientId('21b7bbcaa973981'));
 
-  /// Get your uploaded images
-  final resp = await client.gallery.list();
-
-  print(resp);
-}
