@@ -29,12 +29,13 @@ class _GalleryState extends State<Gallery> {
   final _saved = <WordPair>{};
   final _biggerFont = TextStyle(fontSize: 18.0);
   final map = GoogleFonts.asMap();
-  var gallery = <imgur.GalleryAlbumImage>[];
+  Future<List<imgur.GalleryAlbumImage>> futureGallery;
+  List<imgur.GalleryAlbumImage> gallery;
 
   @override
   void initState() {
     super.initState();
-    printGalleryResponse();
+    futureGallery = getFutureGallery();
   }
 
   @override
@@ -55,7 +56,7 @@ class _GalleryState extends State<Gallery> {
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           final tiles = _saved.map(
-                (WordPair pair) {
+            (WordPair pair) {
               return ListTile(
                 title: Text(
                   pair.asPascalCase,
@@ -81,57 +82,66 @@ class _GalleryState extends State<Gallery> {
   }
 
   Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider();
-          /*2*/
-
-          final index = i ~/ 2; /*3*/
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
+    return FutureBuilder<List<imgur.GalleryAlbumImage>>(
+        future: futureGallery,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            gallery = snapshot.data;
+            return ListView.builder(
+                padding: EdgeInsets.all(16.0),
+                itemBuilder: /*1*/ (context, i) {
+                  if (i.isOdd) return Divider();
+                  /*2*/
+                  final index = i ~/ 2; /*3*/
+                  return _buildRow(index);
+                });
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          } else {
+            // By default, show a loading spinner.
+            return CircularProgressIndicator();
           }
-          return _buildRow(_suggestions[index], index);
         });
   }
 
-  Widget _buildRow(WordPair pair, int index) {
-    final alreadySaved = _saved.contains(pair);
+  Widget _buildRow(int index) {
     final entries = map.entries;
-    final font = entries.elementAt(index);
 
-    final album = gallery[index];
-    return Image.network(album.images[0].link);
-    //   ListTile(
-    //   title: Text(
-    //     pair.asPascalCase,
-    //     style: font.value.call(),
-    //   ),
-    //   trailing: Icon(
-    //     // NEW from here...
-    //     alreadySaved ? Icons.favorite : Icons.favorite_border,
-    //     color: alreadySaved ? Colors.red : null,
-    //   ),
-    //   onTap: () {
-    //     setState(() {
-    //       if (alreadySaved) {
-    //         _saved.remove(pair);
-    //       } else {
-    //         _saved.add(pair);
-    //       }
-    //     });
-    //   },
-    // );
+    final album = gallery.elementAt(index);
+    final firstImage = album.images?.elementAt(0)?.link;
+    if (firstImage == null) {
+      return Image.network('https://picsum.photos/250?image=9');
+
+    } else {
+      return Image.network(firstImage);
+      //   ListTile(
+      //   title: Text(
+      //     pair.asPascalCase,
+      //     style: font.value.call(),
+      //   ),
+      //   trailing: Icon(
+      //     // NEW from here...
+      //     alreadySaved ? Icons.favorite : Icons.favorite_border,
+      //     color: alreadySaved ? Colors.red : null,
+      //   ),
+      //   onTap: () {
+      //     setState(() {
+      //       if (alreadySaved) {
+      //         _saved.remove(pair);
+      //       } else {
+      //         _saved.add(pair);
+      //       }
+      //     });
+      //   },
+      // );
+    }
   }
 
-  printGalleryResponse() async {
-    final client = imgur.Imgur(imgur.Authentication.fromClientId('21b7bbcaa973981'));
+  Future<List<imgur.GalleryAlbumImage>> getFutureGallery() {
+    final client =
+        imgur.Imgur(imgur.Authentication.fromClientId('21b7bbcaa973981'));
 
     /// Get your uploaded images
-    gallery = await client.gallery.list();
-
-    print(gallery);
+    return client.gallery.list();
   }
 }
-
-
