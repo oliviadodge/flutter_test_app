@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imgur/imgur.dart' as imgur;
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,7 +26,6 @@ class Gallery extends StatefulWidget {
 }
 
 class _GalleryState extends State<Gallery> {
-  final _suggestions = <WordPair>[];
   final _saved = <WordPair>{};
   final _biggerFont = TextStyle(fontSize: 18.0);
   final map = GoogleFonts.asMap();
@@ -94,7 +94,8 @@ class _GalleryState extends State<Gallery> {
                   /*2*/
                   final index = i ~/ 2; /*3*/
                   return _buildRow(index);
-                });
+                },
+                itemCount: gallery.length);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           } else {
@@ -109,31 +110,10 @@ class _GalleryState extends State<Gallery> {
 
     final album = gallery.elementAt(index);
     final firstImage = album.images?.elementAt(0)?.link;
-    if (firstImage == null) {
+    if (firstImage == null || album.accountUrl == null) {
       return Image.network('https://picsum.photos/250?image=9');
-
     } else {
-      return Image.network(firstImage);
-      //   ListTile(
-      //   title: Text(
-      //     pair.asPascalCase,
-      //     style: font.value.call(),
-      //   ),
-      //   trailing: Icon(
-      //     // NEW from here...
-      //     alreadySaved ? Icons.favorite : Icons.favorite_border,
-      //     color: alreadySaved ? Colors.red : null,
-      //   ),
-      //   onTap: () {
-      //     setState(() {
-      //       if (alreadySaved) {
-      //         _saved.remove(pair);
-      //       } else {
-      //         _saved.add(pair);
-      //       }
-      //     });
-      //   },
-      // );
+      return  Image.network(firstImage);
     }
   }
 
